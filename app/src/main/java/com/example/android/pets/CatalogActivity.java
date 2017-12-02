@@ -22,6 +22,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.example.android.pets.data.PetContract.PetEntry;
  */
 public class CatalogActivity extends AppCompatActivity {
 
+    PetDbHelper mPetDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +52,7 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        mPetDbHelper = new PetDbHelper(this);
         displayDatabaseInfo();
     }
 
@@ -81,14 +84,14 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     public void insertData() {
-        PetDbHelper mPetDbHelper = new PetDbHelper(this);
         SQLiteDatabase database = mPetDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
         values.put(PetEntry.COLUMN_PET_BREED, "Terrier");
         values.put(PetEntry.COULMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, "7");
-        database.insert(PetEntry.TABLE_NAME, null, values);
+        long rowId = database.insert(PetEntry.TABLE_NAME, null, values);
+        Log.i("CatalogActivity: ", "ROW ID: " + rowId);
     }
 
     @Override
@@ -107,6 +110,7 @@ public class CatalogActivity extends AppCompatActivity {
             case R.id.action_insert_dummy_data:
                 // Do nothing for now
                 insertData();
+                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
